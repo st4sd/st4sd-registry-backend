@@ -6,22 +6,29 @@
 #
 import experiment.service.db
 
-#
-runtime_service_endpoint = "http://st4sd-runtime-service:4000/rs/experiments"
-datastore_registry_endpoint = "http://st4sd-datastore-nexus:5001/ds-registry/"
-datastore_rest_endpoint = "http://st4sd-authentication:5003/ds-mongodb-proxy/"
+from utils.config import settings
+
+
+def get_api_token():
+    with open(settings.token_path, 'r') as f:
+        token = f.readlines()[0].strip()
+    return token
 
 
 def get_api():
-    token_path = '/var/run/secrets/tokens/rs-token'
-    with open(token_path, 'r') as f:
-        token = f.readlines()[0]
-
-    api = experiment.service.db.ExperimentRestAPI(runtime_service_endpoint,
-                                                  cdb_registry_url=datastore_registry_endpoint,
-                                                  cdb_rest_url=datastore_rest_endpoint,
-                                                  cc_bearer_key=token,
+    api = experiment.service.db.ExperimentRestAPI(settings.runtime_service_endpoint,
+                                                  cdb_registry_url=settings.datastore_registry_endpoint,
+                                                  cdb_rest_url=settings.datastore_rest_endpoint,
+                                                  cc_bearer_key=get_api_token(),
                                                   test_cdb_connection=False,
                                                   validate_auth=False,
                                                   discover_cdb_urls=False)
+
     return api
+
+
+def get_authorization_headers():
+    headers = {}
+    if settings.ENV_FOR_DYNACONF != 'production':
+        headers['Authorization'] = f"Bearer {get_api_token()}"
+    return headers
