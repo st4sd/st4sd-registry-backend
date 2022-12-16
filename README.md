@@ -108,13 +108,13 @@ will use the `production` configuration, which uses internal OpenShift DNS
 routing. As these routes won't work outside of the cluster, we will need to
 provide the external ones.
 
-You can get the external base route for your cluster with:
+In your terminal, get the external base route for your cluster with:
 
 ```bash
 ST4SD_AUTH_ROUTE=$(oc get route st4sd-authentication -o jsonpath='{.spec.host}')
 ```
 
-We can then extend the toml configuration file with:
+Run the following command from your terminal to extend the toml configuration file automatically:
 
 ```bash
 echo -e "\n\n[development]
@@ -128,7 +128,7 @@ token_path=\"$HOME/.st4sd_serviceaccount_token\"
 #### Using the development configuration
 
 To ensure the Backend uses the development configuration we need to set the
-`ENV_FOR_DYNACONF` environment variable:
+`ENV_FOR_DYNACONF` environment variable. From your terminal run:
 
 ```bash
 export ENV_FOR_DYNACONF=development
@@ -141,6 +141,12 @@ We can start the local backend with:
 ```bash
 python app.py
 ```
+
+**Note that it's normal to see the following output when launching the backend:**
+>```bash
+>Unable to import pythonlsf - limited LSF functionality will be available
+> Unable to import tinydb module - tinydb interface not available
+>```
 
 ### Lint and fix files
 
