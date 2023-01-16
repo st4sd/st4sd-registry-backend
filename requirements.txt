@@ -1,7 +1,7 @@
 Flask==2.2.2
 Flask-Cors==3.0.10
-flask-restx==1.0.3
-requests==2.28.1
+flask-restx==1.0.5
+requests==2.28.2
 waitress==2.1.2
 st4sd-runtime-core
 dynaconf~=3.1.11
