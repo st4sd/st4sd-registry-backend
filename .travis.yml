@@ -35,14 +35,14 @@ jobs:
       services:
         - docker
       script:
-        - export FULL_IMAGE_ID=${DOCKER_REGISTRY}/experimental/st4sd-registry-backend:$TRAVIS_BRANCH
+        - export FULL_IMAGE_ID=${DOCKER_REGISTRY}/st4sd-registry-backend:$TRAVIS_BRANCH
         - ./build_and_push.sh $FULL_IMAGE_ID
     - stage: "Build test image pr"
       os: linux
       services:
         - docker
       script:
-        - export FULL_IMAGE_ID=${DOCKER_REGISTRY}/experimental/st4sd-registry-backend:$TRAVIS_PULL_REQUEST_BRANCH
+        - export FULL_IMAGE_ID=${DOCKER_REGISTRY}/st4sd-registry-backend:$TRAVIS_PULL_REQUEST_BRANCH
         - ./build_and_push.sh $FULL_IMAGE_ID
     - stage: "Build production image"
       os: linux
