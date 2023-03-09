@@ -13,6 +13,9 @@ from utils.st4sd_api_helper import get_authorization_headers
 
 api = Namespace('experiments', description='Experiment-related operations')
 
+# TODO: use StrEnum when Python 3.11 is supported
+supported_experiment_search_selectors = ["name", "description", "maintainer", "property_name"]
+
 
 @api.route('/')
 class PVEPList(Resource):
@@ -24,21 +27,30 @@ class PVEPList(Resource):
             f"{settings.runtime_service_endpoint}experiments/", headers=authorization_headers)
         assert response.status_code == 200, f"Response code was {response.status_code}"
 
-        search_query = request.args.get("searchQuery")
-        search_selector = request.args.get("searchSelector")
-
+        search_query = request.args.get("searchQuery", "").lower()
+        search_selector = request.args.get("searchSelector", "").lower()
         # No query
-        if search_query is None and search_selector is None:
+        if search_selector == "" or search_query == "":
             return jsonify(response.json())
 
+        # Unsupported search selector
+        if search_selector not in supported_experiment_search_selectors:
+            return jsonify({})
+
         # Handle search
-        experiments_matching_query = []
-        search_query_lower = search_query.lower()
-        search_selector_lower = search_selector.lower()
+        experiments_matching_query = {"entries": []}
         for exp in response.json()["entries"]:
-            if search_selector_lower in exp["metadata"]["package"]:
-                if search_query_lower in exp["metadata"]["package"][search_selector_lower].lower():
-                    experiments_matching_query.append(exp)
+            # Search by property
+            if search_selector == "property_name":
+                for property in exp["metadata"]["registry"]["interface"].get("propertiesSpec", {}):
+                    if search_query in property.get("name", "").lower():
+                        experiments_matching_query['entries'].append(exp)
+                        break
+            # Search by metadata
+            elif search_selector in ["description", "maintainer", "name"]:
+                if search_query in exp["metadata"]["package"].get(search_selector, "").lower():
+                    experiments_matching_query['entries'].append(exp)
+
         return jsonify(experiments_matching_query)
 
 
