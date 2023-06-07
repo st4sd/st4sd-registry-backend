@@ -20,8 +20,17 @@ class RunProperties(Resource):
     def get(self, pvep: str):
         """Get all properties for a PVEP"""
         st4sd_api = get_api()
-        query = {'$or': [{'metadata.userMetadata.st4sd-package-name': pvep}, {'metadata.userMetadata.package-name': pvep}]}
-        matching_experiments = st4sd_api.cdb_get_document_experiment(pvep, query, include_properties=['*'], stringify_nan=True)
+        if ":" in pvep:
+            experiment_name = pvep[: pvep.index(":")]
+            pvep_def = st4sd_api.api_get_experiment(pvep)
+            digest = pvep_def["metadata"]["registry"]["digest"]
+            identifier = "@".join([experiment_name, digest])
+            query = {"metadata.userMetadata.experiment-id": identifier}
+        elif "@" in pvep:
+            query = {"metadata.userMetadata.experiment-id": pvep}
+        else:
+            query = {"metadata.userMetadata.st4sd-package-name": pvep}
+        matching_experiments = st4sd_api.cdb_get_document_experiment(query=query, include_properties=['*'], stringify_nan=True)
         properties = {}
 
         for experiment in matching_experiments:
