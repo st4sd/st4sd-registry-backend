@@ -25,7 +25,9 @@ class PVEPList(Resource):
         authorization_headers = get_authorization_headers()
         response = requests.get(
             f"{settings.runtime_service_endpoint}experiments/", headers=authorization_headers)
-        assert response.status_code == 200, f"Response code was {response.status_code}"
+        if response.status_code != 200:
+            api.logger.warning(msg=f"{request} returned error code {response.status_code}")
+            return {}, response.status_code
 
         search_query = request.args.get("searchQuery", "").lower()
         search_selector = request.args.get("searchSelector", "").lower()
@@ -68,7 +70,9 @@ class PVEP(Resource):
             query_string = bytes.decode(request.query_string)
             response = requests.get(
                 f"{settings.runtime_service_endpoint}experiments/{pvep}?{query_string}", headers=authorization_headers)
-        assert response.status_code == 200, f"Response code was {response.status_code}"
+        if response.status_code != 200:
+            api.logger.warning(msg=f"{request} returned error code {response.status_code}")
+            return {}, response.status_code
         return jsonify(response.json())
 
 
@@ -81,5 +85,7 @@ class PVEPHistory(Resource):
         authorization_headers = get_authorization_headers()
         response = requests.get(
             f"{settings.runtime_service_endpoint}experiments/{pvep}/history", headers=authorization_headers)
-        assert response.status_code == 200, f"Response code was {response.status_code}"
+        if response.status_code != 200:
+            api.logger.warning(msg=f"{request} returned error code {response.status_code}")
+            return {}, response.status_code
         return jsonify(response.json())
