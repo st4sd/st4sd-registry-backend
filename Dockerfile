@@ -1,4 +1,4 @@
-FROM quay.io/st4sd/official-base/st4sd-runtime-core
+FROM quay.io/st4sd/official-base/st4sd-runtime-core:py310-latest
 COPY requirements.txt .
 COPY *.py ./
 COPY apis ./apis
