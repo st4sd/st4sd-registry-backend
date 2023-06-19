@@ -3,3 +3,4 @@ runtime_service_endpoint = "http://st4sd-runtime-service:4000/rs/"
 datastore_registry_endpoint = "http://st4sd-datastore-nexus:5001/ds-registry/"
 datastore_rest_endpoint = "http://st4sd-authentication:5003/ds-mongodb-proxy/"
 token_path = '/var/run/secrets/tokens/rs-token'
+

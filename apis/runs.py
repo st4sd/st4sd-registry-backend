@@ -8,6 +8,7 @@ from flask import jsonify
 from flask_restx import Namespace, Resource
 
 from utils.st4sd_api_helper import get_api
+from utils.decorators import disable_on_global_instances
 
 api = Namespace('runs', description='Run-related operations')
 
@@ -15,6 +16,7 @@ api = Namespace('runs', description='Run-related operations')
 @api.route('/')
 class RunList(Resource):
     @api.doc('get_all_runs')
+    @disable_on_global_instances
     def get(self):
         """Get all runs"""
         st4sd_api = get_api()
@@ -26,6 +28,7 @@ class RunList(Resource):
 class PVEPRunList(Resource):
     @api.param('pvep', 'The PVEP identifier')
     @api.doc('get_runs_for_pvep')
+    @disable_on_global_instances
     def get(self, pvep: str):
         """Get all runs for a PVEP"""
         st4sd_api = get_api()
@@ -49,6 +52,7 @@ class PVEPRunList(Resource):
     @api.param('pvep', 'The PVEP identifier')
     @api.param('rest_uid', 'The PVEP rest_uid')
     @api.doc('get_runs_for_rest_uid')
+    @disable_on_global_instances
     def get(self, pvep: str, rest_uid: str):
         """Get all runs for a rest_uid"""
         st4sd_api = get_api()

@@ -7,6 +7,7 @@
 from flask import jsonify
 from flask_restx import Namespace, Resource
 
+from utils.decorators import disable_on_global_instances
 from utils.st4sd_api_helper import get_api
 
 api = Namespace('logs', description='Log-related operations')
@@ -16,6 +17,7 @@ api = Namespace('logs', description='Log-related operations')
 class ExperimentLogs(Resource):
     @api.param('rest_uid', 'The experiment instance identifier')
     @api.doc('get_experiment_logs')
+    @disable_on_global_instances
     def get(self, rest_uid: str):
         """Get the logs of an experiment instance"""
         st4sd_api = get_api()
@@ -33,6 +35,7 @@ class ExperimentComponentLogs(Resource):
     @api.param('rest_uid', 'The experiment instance identifier')
     @api.param('component_id', 'The component identifier')
     @api.doc('get_experiment_component_logs')
+    @disable_on_global_instances
     def get(self, rest_uid: str, component_id: str):
         """Get the logs of an experiment component"""
         st4sd_api = get_api()

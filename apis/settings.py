@@ -4,10 +4,11 @@
 #
 #   Author: Alessandro Pomponio
 #
-import os
 
 from flask import jsonify
 from flask_restx import Namespace, Resource
+
+import utils.envvars
 
 api = Namespace('settings', description='Registry UI-related settings')
 
@@ -17,11 +18,5 @@ class SettingsList(Resource):
     @api.doc('get_settings')
     def get(self):
         """Get all settings"""
-        env_vars = os.environ
-        response = {}
-
-        for k in env_vars.keys():
-            if k.startswith("ST4SD_REGISTRY_UI_SETTINGS_"):
-                response[k] = os.environ[k]
-
+        response = utils.envvars.get_settings_env_vars()
         return jsonify(response)
