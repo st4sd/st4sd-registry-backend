@@ -144,7 +144,7 @@ class RunPVEP(Resource):
         authorization_headers = get_authorization_headers()
         response = requests.post(
             f"{settings.runtime_service_endpoint}experiments/{pvep}/start", headers=authorization_headers,
-            json=json.loads(payload))
+            json=payload)
 
         if response.status_code != 200:
             api.logger.warning(msg=f"{request} returned error code {response.status_code}")
