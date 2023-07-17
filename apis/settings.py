@@ -10,12 +10,12 @@ from flask_restx import Namespace, Resource
 
 import utils.envvars
 
-api = Namespace('settings', description='Registry UI-related settings')
+api = Namespace("settings", description="Registry UI-related settings")
 
 
-@api.route('/')
+@api.route("/")
 class SettingsList(Resource):
-    @api.doc('get_settings')
+    @api.doc("get_settings")
     def get(self):
         """Get all settings"""
         response = utils.envvars.get_settings_env_vars()

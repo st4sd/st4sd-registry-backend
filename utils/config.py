@@ -8,7 +8,7 @@ from dynaconf import Dynaconf
 
 settings = Dynaconf(
     envvar_prefix="DYNACONF",
-    settings_files=['settings.toml', '.secrets.toml'],
+    settings_files=["settings.toml", ".secrets.toml"],
     environments=True,
-    env='production'    # Replace by running export ENV_FOR_DYNACONF=development
+    env="production",  # Replace by running export ENV_FOR_DYNACONF=development
 )
