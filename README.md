@@ -143,9 +143,10 @@ python app.py
 ```
 
 **Note that it's normal to see the following output when launching the backend:**
+
 >```bash
 >Unable to import pythonlsf - limited LSF functionality will be available
-> Unable to import tinydb module - tinydb interface not available
+>Unable to import tinydb module - tinydb interface not available
 >```
 
 ### Lint and fix files
