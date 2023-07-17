@@ -144,14 +144,22 @@ python app.py
 
 **Note that it's normal to see the following output when launching the backend:**
 
->```bash
+> ```bash
 >Unable to import pythonlsf - limited LSF functionality will be available
 >Unable to import tinydb module - tinydb interface not available
 >```
 
 ### Lint and fix files
 
-Coming soon.
+This project uses [`black`](https://pypi.org/project/black/) to format the code.
+You can install it and use it to lint your code with:
+
+```bash
+pip install black
+black .
+```
+
+Code not following `black` formatting will not be merged.
 
 ## Help and Support
 
