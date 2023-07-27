@@ -12,7 +12,7 @@ from flask import jsonify, request
 from flask_restx import Namespace, Resource
 
 from utils.config import settings
-from utils.decorators import disable_on_global_instances
+from utils.decorators import disable_on_global_instances, enable_with_env_var
 from utils.st4sd_api_helper import get_api
 from utils.st4sd_api_helper import get_authorization_headers
 
@@ -105,6 +105,7 @@ class PVEP(Resource):
 
     @api.param("pvep", "The pvep identifier")
     @api.doc("edit_parameterisation_options")
+    @enable_with_env_var("ST4SD_REGISTRY_UI_SETTINGS_ENABLE_EDIT_PARAMETERISATION")
     @disable_on_global_instances
     def post(self, pvep: str):
         try:
@@ -124,6 +125,7 @@ class PVEP(Resource):
 class PVEPParameterisationOptions(Resource):
     @api.param("pvep", "The pvep identifier")
     @api.doc("get_pvep_parameterisation_options")
+    @enable_with_env_var("ST4SD_REGISTRY_UI_SETTINGS_ENABLE_EDIT_PARAMETERISATION")
     def get(self, pvep: str):
         """Get a pveps parameterisation options"""
         authorization_headers = get_authorization_headers()
@@ -166,6 +168,7 @@ class PVEPHistory(Resource):
 class RunPVEP(Resource):
     @api.param("pvep", "The pvep identifier")
     @api.doc("edit_parameterisation_options")
+    @enable_with_env_var("ST4SD_REGISTRY_UI_SETTINGS_ENABLE_RUN_EXPERIMENT")
     @disable_on_global_instances
     def post(self, pvep: str):
         payload = request.json
