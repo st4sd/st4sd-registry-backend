@@ -9,7 +9,11 @@ from flask import jsonify, request
 from flask_restx import Namespace, Resource
 
 from utils.config import settings
-from utils.decorators import disable_on_global_instances, disable_with_env_var
+from utils.decorators import (
+    disable_on_global_instances,
+    disable_with_env_var,
+    enable_with_env_var,
+)
 from utils.st4sd_api_helper import get_authorization_headers
 
 api = Namespace("canvas", description="Canvas related operations")
@@ -136,3 +140,69 @@ class NewExperiment(Resource):
             )
 
         return response.json(), response.status_code
+
+
+@api.route("/dsl/validate", methods=["POST"])
+class ValidateDsl(Resource):
+    @api.doc("dsl_validation")
+    @enable_with_env_var("ST4SD_REGISTRY_UI_SETTINGS_ENABLE_BUILD_CANVAS")
+    def post(self):
+        dsl_payload = request.json
+        authorization_headers = get_authorization_headers()
+        response = requests.post(
+            f"{settings.runtime_service_endpoint}utilities/dsl/",
+            headers=authorization_headers,
+            json=dsl_payload,
+        )
+
+        if response.status_code != 200:
+            api.logger.warning(
+                msg=f"{request} returned error code {response.status_code}"
+            )
+            return response.json(), response.status_code
+
+        return response.json()
+
+
+@api.route("/pvep/generate", methods=["POST"])
+class GeneratePVEP(Resource):
+    @api.doc("generate_pvep_from_canvas_dsl")
+    @enable_with_env_var("ST4SD_REGISTRY_UI_SETTINGS_ENABLE_BUILD_CANVAS")
+    def post(self):
+        dsl_payload = request.json
+        authorization_headers = get_authorization_headers()
+        response = requests.post(
+            f"{settings.runtime_service_endpoint}utilities/pvep/",
+            headers=authorization_headers,
+            json=dsl_payload,
+        )
+
+        if response.status_code != 200:
+            api.logger.warning(
+                msg=f"{request} returned error code {response.status_code}"
+            )
+            return response.json(), response.status_code
+
+        return response.json()
+
+
+@api.route("/internalexperiment/create", methods=["POST"])
+class CreateInternalExperiment(Resource):
+    @api.doc("create_internal_experiment")
+    @enable_with_env_var("ST4SD_REGISTRY_UI_SETTINGS_ENABLE_BUILD_CANVAS")
+    def post(self):
+        payload = request.json
+        authorization_headers = get_authorization_headers()
+        response = requests.post(
+            f"{settings.runtime_service_endpoint}internal-experiments/",
+            headers=authorization_headers,
+            json=payload,
+        )
+
+        if response.status_code != 200:
+            api.logger.warning(
+                msg=f"{request} returned error code {response.status_code}"
+            )
+            return response.json(), response.status_code
+
+        return response.json()
