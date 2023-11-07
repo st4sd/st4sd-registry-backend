@@ -206,3 +206,21 @@ class CreateInternalExperiment(Resource):
             return response.json(), response.status_code
 
         return response.json()
+
+
+@api.route("/graphs")
+class GetGraphs(Resource):
+    @api.doc("getting_graphs_for_graph_library")
+    @enable_with_env_var("ST4SD_REGISTRY_UI_SETTINGS_ENABLE_BUILD_CANVAS")
+    def get(self):
+        """get all graphs for graph library"""
+        authorization_headers = get_authorization_headers()
+        response = requests.get(
+            f"{settings.runtime_service_endpoint}library/",
+            headers=authorization_headers,
+        )
+
+        if response.status_code != 200:
+            return response.json(), response.status_code
+
+        return response.json()
