@@ -208,8 +208,8 @@ class CreateInternalExperiment(Resource):
         return response.json()
 
 
-@api.route("/graphs")
-class GetGraphs(Resource):
+@api.route("/graphs-library/internal", methods=["GET", "POST"])
+class InternalGraphs(Resource):
     @api.doc("getting_graphs_for_graph_library")
     @enable_with_env_var("ST4SD_REGISTRY_UI_SETTINGS_ENABLE_BUILD_CANVAS")
     def get(self):
@@ -225,9 +225,32 @@ class GetGraphs(Resource):
 
         return response.json()
 
+    @api.doc("adding_graph_to_the_local_library")
+    @enable_with_env_var(
+        "ST4SD_REGISTRY_UI_SETTINGS_ENABLE_LOCAL_GRAPHS_LIBRARY_WRITE_ACCESS"
+    )
+    def post(self):
+        """add graph to the local library"""
+        payload = request.json
+        authorization_headers = get_authorization_headers()
 
-@api.route("/graphs-library")
-class GetGraphs(Resource):
+        response = requests.post(
+            f"{settings.runtime_service_endpoint}library/",
+            headers=authorization_headers,
+            json=payload,
+        )
+
+        if response.status_code != 200:
+            api.logger.warning(
+                msg=f"{request} returned error code {response.status_code}"
+            )
+            return response.json(), response.status_code
+
+        return response.json()
+
+
+@api.route("/graphs-library/external")
+class ExternalGraphs(Resource):
     @api.doc("getting_graphs_for_global_library")
     @enable_with_env_var("ST4SD_REGISTRY_UI_SETTINGS_ENABLE_GLOBAL_REGISTRY_LIBRARY")
     def get(self):
