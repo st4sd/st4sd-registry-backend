@@ -249,6 +249,30 @@ class InternalGraphs(Resource):
         return response.json()
 
 
+@api.route("/graphs-library/internal/<graph_id>", methods=["DELETE"])
+class DeleteInternalGraph(Resource):
+    @api.param("graph_id", "The graph identifier")
+    @api.doc("deleting_a_graph")
+    @enable_with_env_var(
+        "ST4SD_REGISTRY_UI_SETTINGS_ENABLE_LOCAL_GRAPHS_LIBRARY_WRITE_ACCESS"
+    )
+    def delete(self, graph_id: str):
+        """delete a graph"""
+        authorization_headers = get_authorization_headers()
+        response = requests.delete(
+            f"{settings.runtime_service_endpoint}library/{graph_id}/",
+            headers=authorization_headers,
+        )
+
+        if response.status_code != 200:
+            api.logger.warning(
+                msg=f"{request} returned error code {response.status_code}"
+            )
+            return response.json(), response.status_code
+
+        return response.json()
+
+
 @api.route("/graphs-library/external")
 class ExternalGraphs(Resource):
     @api.doc("getting_graphs_for_global_library")
