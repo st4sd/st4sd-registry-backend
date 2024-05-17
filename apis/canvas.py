@@ -38,7 +38,10 @@ class PVEPDsl(Resource):
             )
             return None, response.status_code
 
-        return jsonify(response.json().get("dsl", None))
+        if response.json().get("dsl", None) is None:
+            return None, 502
+
+        return jsonify(response.json().get("dsl"))
 
 
 @api.route("/<pvep>/relationships")
