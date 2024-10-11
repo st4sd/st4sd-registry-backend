@@ -8,7 +8,6 @@
 #!/bin/bash
 
 #TODO: add validation on input params
-docker login -u $DOCKER_USER -p $DOCKER_PASS $DOCKER_REGISTRY
-docker run --privileged --rm tonistiigi/binfmt --install arm64,ppc64le
-docker buildx create --use
-docker buildx build --platform linux/amd64 --push -t $1 .
+docker login -u "$DOCKER_USER" -p "$DOCKER_PASS" "$DOCKER_REGISTRY"
+docker buildx create --use --driver-opt=image=mirror.gcr.io/moby/buildkit
+docker buildx build --platform linux/amd64 --push -t "$1" .
