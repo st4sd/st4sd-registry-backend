@@ -5,6 +5,7 @@
 #   Author: Alessandro Pomponio
 #
 import requests
+from experiment.service.errors import NoMatchingDocumentError
 from flask import jsonify, request
 from flask_restx import Namespace, Resource
 
@@ -23,7 +24,11 @@ class RunList(Resource):
     def get(self):
         """Get all runs"""
         st4sd_api = get_api()
-        response = st4sd_api.cdb_get_document_experiment(query={})
+        try:
+            response = st4sd_api.cdb_get_document_experiment(query={})
+        except NoMatchingDocumentError as e:
+            api.logger.exception(e)
+            return {}, 404
         return jsonify(response)
 
 
@@ -49,7 +54,11 @@ class PVEPRunList(Resource):
             query = {"metadata.userMetadata.st4sd-package-name": pvep}
 
         # The runtime will register runs in the database automatically
-        cdb_runs = st4sd_api.cdb_get_document_experiment(query=query)
+        try:
+            cdb_runs = st4sd_api.cdb_get_document_experiment(query=query)
+        except NoMatchingDocumentError as e:
+            api.logger.exception(e)
+            return {}, 404
 
         # For the runs that still haven't been registered to the DB yet
         # we need to query the runtime service.
@@ -111,13 +120,23 @@ class PVEPRunList(Resource):
     def get(self, pvep: str, rest_uid: str):
         """Get all runs for a rest_uid"""
         st4sd_api = get_api()
-        doc = st4sd_api.cdb_get_document(
-            query={"metadata.userMetadata.rest-uid": rest_uid}
-        )
-        if len(doc) > 0:
-            response = st4sd_api.cdb_get_document_component(
-                instance=doc[0]["metadata"]["instanceName"]
+
+        try:
+            doc = st4sd_api.cdb_get_document(
+                query={"metadata.userMetadata.rest-uid": rest_uid}
             )
-        else:
-            response = {}
+        except NoMatchingDocumentError as e:
+            api.logger.exception(e)
+            return {}, 404
+
+        # AP: We did not find a matching document, but it could be that
+        # the run hasn't been registered to the database yet.
+        # Instead of returning 404 we return 425 (TOO EARLY) to
+        # let the user know that the error might be fixed with a refresh
+        if len(doc) == 0:
+            return {}, 425
+
+        response = st4sd_api.cdb_get_document_component(
+            instance=doc[0]["metadata"]["instanceName"]
+        )
         return jsonify(response)

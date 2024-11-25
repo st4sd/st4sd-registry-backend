@@ -6,10 +6,10 @@
 #
 import json
 
-import experiment.service.errors
 import requests
 from flask import jsonify, request
 from flask_restx import Namespace, Resource
+from experiment.service.errors import NoMatchingDocumentError, InvalidHTTPRequest
 
 from utils.config import settings
 from utils.decorators import disable_on_global_instances, enable_with_env_var
@@ -112,7 +112,7 @@ class PVEP(Resource):
             st4sd_api = get_api()
             parameterisation_options = request.json
             response = st4sd_api.api_experiment_push(parameterisation_options)
-        except experiment.service.errors.InvalidHTTPRequest as e:
+        except InvalidHTTPRequest as e:
             api.logger.warning(
                 msg=f"{request} returned error code {e.response.status_code}"
             )

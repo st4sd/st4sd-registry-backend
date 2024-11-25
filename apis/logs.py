@@ -9,6 +9,7 @@ from flask_restx import Namespace, Resource
 
 from utils.decorators import disable_on_global_instances
 from utils.st4sd_api_helper import get_api
+from experiment.service.errors import NoMatchingDocumentError
 
 api = Namespace("logs", description="Log-related operations")
 
@@ -21,7 +22,11 @@ class ExperimentLogs(Resource):
     def get(self, rest_uid: str):
         """Get the logs of an experiment instance"""
         st4sd_api = get_api()
-        metadata = st4sd_api.cdb_get_document_user_metadata_for_rest_uid(rest_uid)
+        try:
+            metadata = st4sd_api.cdb_get_document_user_metadata_for_rest_uid(rest_uid)
+        except NoMatchingDocumentError as e:
+            api.logger.exception(e)
+            return {}, 404
         try:
             response = st4sd_api.cdb_get_file_from_instance_uri(
                 metadata["instance"], "output/experiment.log"
@@ -50,6 +55,9 @@ class ExperimentComponentLogs(Resource):
                 response = retrieved[list(retrieved.keys())[0]][1].decode("utf-8")
             else:
                 response = ""
+        except NoMatchingDocumentError as e:
+            api.logger.exception(e)
+            return {}, 404
         except ValueError:
             response = ""
         return jsonify(response)

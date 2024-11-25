@@ -10,6 +10,7 @@ from flask_restx import Namespace, Resource
 
 from utils.decorators import disable_on_global_instances
 from utils.st4sd_api_helper import get_api
+from experiment.service.errors import NoMatchingDocumentError
 
 api = Namespace("properties", description="Measured Property related operations")
 
@@ -32,9 +33,15 @@ class RunProperties(Resource):
             query = {"metadata.userMetadata.experiment-id": pvep}
         else:
             query = {"metadata.userMetadata.st4sd-package-name": pvep}
-        matching_experiments = st4sd_api.cdb_get_document_experiment(
-            query=query, include_properties=["*"], stringify_nan=True
-        )
+
+        try:
+            matching_experiments = st4sd_api.cdb_get_document_experiment(
+                query=query, include_properties=["*"], stringify_nan=True
+            )
+        except NoMatchingDocumentError as e:
+            api.logger.exception(e)
+            return {}, 404
+
         properties = {}
 
         for experiment in matching_experiments:
@@ -52,9 +59,15 @@ class RunProperties(Resource):
     @disable_on_global_instances
     def get(self, pvep: str, rest_uid: str):
         st4sd_api = get_api()
-        response = st4sd_api.cdb_get_document_experiment_for_rest_uid(
-            rest_uid, include_properties=["*"], stringify_nan=True
-        )
+
+        try:
+            response = st4sd_api.cdb_get_document_experiment_for_rest_uid(
+                rest_uid, include_properties=["*"], stringify_nan=True
+            )
+        except NoMatchingDocumentError as e:
+            api.logger.exception(e)
+            return {}, 404
+
         properties = {}
         if "interface" in response and "propertyTable" in response["interface"]:
             properties[response["metadata"]["userMetadata"]["rest-uid"]] = response[
