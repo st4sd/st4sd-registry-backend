@@ -4,3 +4,16 @@ datastore_registry_endpoint = "http://st4sd-datastore-nexus:5001/ds-registry/"
 datastore_rest_endpoint = "http://st4sd-authentication:5003/ds-mongodb-proxy/"
 token_path = '/var/run/secrets/tokens/rs-token'
 
+[development]
+runtime_service_endpoint = "https://st4sd-5446-dev.ve-5446-9ca4d14d48413d18ce61b80811ba4308-0000.us-south.containers.appdomain.cloud/rs/"
+datastore_registry_endpoint = "https://st4sd-5446-dev.ve-5446-9ca4d14d48413d18ce61b80811ba4308-0000.us-south.containers.appdomain.cloud/ds-registry/"
+datastore_rest_endpoint = "https://st4sd-5446-dev.ve-5446-9ca4d14d48413d18ce61b80811ba4308-0000.us-south.containers.appdomain.cloud/ds-mongodb-proxy/"
+token_path='/Users/alessandropomponio/.rs_token_st4sd_5446_dev'
+
+
+[nightly]
+runtime_service_endpoint = "https://st4sd-nightly.ve-5446-9ca4d14d48413d18ce61b80811ba4308-0000.us-south.containers.appdomain.cloud/rs/"
+datastore_registry_endpoint = "https://st4sd-nightly.ve-5446-9ca4d14d48413d18ce61b80811ba4308-0000.us-south.containers.appdomain.cloud/ds-registry/"
+datastore_rest_endpoint = "https://st4sd-nightly.ve-5446-9ca4d14d48413d18ce61b80811ba4308-0000.us-south.containers.appdomain.cloud/ds-mongodb-proxy/"
+token_path="/Users/alessandropomponio/.st4sd_nightly_serviceaccount_token"
+
