@@ -1,4 +1,8 @@
-FROM quay.io/st4sd/official-base/st4sd-runtime-core:py310-latest
+FROM mirror.gcr.io/python:3.10-alpine
+RUN apk update && \
+    apk add gcc linux-headers musl-dev && \
+    apk cache clean && apk cache purge
+
 COPY requirements.txt .
 COPY *.py ./
 COPY apis ./apis
