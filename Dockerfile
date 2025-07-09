@@ -1,14 +1,17 @@
-FROM mirror.gcr.io/python:3.10-alpine
+FROM mirror.gcr.io/python:3.10-alpine AS build_stage
 RUN apk update && \
-    apk add gcc linux-headers musl-dev && \
-    apk cache clean && apk cache purge
+    apk add gcc linux-headers musl-dev
+COPY requirements.txt .
+RUN pip install --upgrade pip setuptools && pip install -r requirements.txt
 
+
+FROM mirror.gcr.io/python:3.10-alpine
+COPY --from=build_stage /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages
 COPY requirements.txt .
 COPY *.py ./
 COPY apis ./apis
 COPY utils ./utils
 COPY settings.toml ./settings.toml
-RUN pip install -r requirements.txt
 EXPOSE 8085
 
 ENTRYPOINT ["python", "app.py"]
